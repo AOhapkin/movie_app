@@ -20,12 +20,11 @@
   },
   "plugins": ["react", "prettier", "import"],
   "rules": {
-    "indent": ["error", 2],
+    "indent": ["warn", 2],
     "prettier/prettier": "off",
     "linebreak-style": [0, "unix"],
     "quotes": ["error", "single"],
     "react/react-in-jsx-scope": "off",
-    "react/prop-types": 0,
     "import/no-unresolved": [2, { "caseSensitive": false }],
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
     "import/order": [
@@ -39,11 +38,12 @@
           "sibling",
           "index"
         ],
-        "newlines-between": "always"
+        "newlines-between": "always-and-inside-groups"
       }
     ]
   },
   "settings": {
+    "version": "detect",
     "import/resolver": {
       "node": {
         "extensions": [".js", ".jsx", ".ts", ".tsx"],
