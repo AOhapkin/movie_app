@@ -1,11 +1,10 @@
-import Layout, {Content, Header} from 'antd/es/layout/layout';
+import AppHeader from '../AppHeader';
 
 function App() {
   return (
-    <Layout>
-      <Header>Head</Header>
-      <Content>Main</Content>
-    </Layout>
+    <section>
+      <AppHeader />
+    </section>
   );
 }
 
