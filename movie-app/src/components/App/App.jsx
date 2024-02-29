@@ -1,12 +1,14 @@
 import AppHeader from '../AppHeader';
 import AppMain from '../AppMain';
 import MoviesApiService from '../../services/movies-api';
+import MovieCard from '../MovieCard/MovieCard';
 
 const moviesApi = new MoviesApiService();
 
 // console.log(moviesApi.fetchMovies('Batman'))
 
-const movies = moviesApi.fetchMovies('Batman').then(results => results);
+moviesApi.createNewGuestSession();
+const movies = moviesApi.getMovies('Batman');
 
 console.log(movies)
 
@@ -19,6 +21,7 @@ function App() {
     <>
       <AppHeader />
       <AppMain />
+      <MovieCard />
     </>
   );
 }
