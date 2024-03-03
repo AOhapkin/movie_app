@@ -5,16 +5,13 @@ import MovieCard from '../MovieCard/MovieCard';
 
 const moviesApi = new MoviesApiService();
 
-// console.log(moviesApi.fetchMovies('Batman'))
+// moviesApi.createNewGuestSession() 
 
-moviesApi.createNewGuestSession();
-const movies = moviesApi.getMovies('Batman');
+// это работает
+// const promise = moviesApi.getMovies();
+// promise.then(response => response)
 
-console.log(movies)
-
-// console.log(moviesApi.getMovie('Batman').json())
-
-// const moviesArr = await fetch()
+console.log(moviesApi.getSearchedMovies('Batman', 1));
 
 function App() {
   return (
