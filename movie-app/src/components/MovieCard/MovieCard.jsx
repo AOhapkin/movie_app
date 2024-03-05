@@ -3,6 +3,7 @@ import { parseISO, format } from 'date-fns';
 import { Typography } from 'antd';
 
 import NoImage from './test_img.jpg';
+import './MovieCard.css';
 
 export default class MovieCard extends Component {
   constructor(props) {

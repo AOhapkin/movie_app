@@ -31,7 +31,7 @@ export default class App extends Component {
   }
 
   updateMovies() {
-    this.initLoading();
+    // this.initLoading();
     const {query, currentPage} = this.state;
     this.moviesApi
       .getSearchedMovies(query, currentPage)
@@ -58,26 +58,26 @@ export default class App extends Component {
     }
   }
 
-  onLoaded = () => {
-    this.setState({ isLoading: false })
-  }
+  // onLoaded = () => {
+  //   this.setState({ isLoading: false })
+  // }
 
-  initLoading = () => {
-    this.setState({ isLoading: true })
-  }
+  // initLoading = () => {
+  //   this.setState({ isLoading: true })
+  // }
 
   render() {
     // this.moviesApi.getSearchedMovies('Batman', 1).then(([movies, totalPages]) => {
     //   console.log(movies);
     //   console.log(totalPages);
     // });
-    const {movies, query, isLoading, currentPage, totalPages} = this.state;
+    const {movies, currentPage, totalPages} = this.state;
 
     console.log(movies)
 
     return (
       <>
-        <AppHeader onQueryChange={this.onQueryChange} />
+        <AppHeader onQueryChange={this.onQueryChange.bind(this)} />
         <MovieList movies={movies} />
         <AppFooter currentPage={currentPage} totalPages={totalPages} onPageChange={this.onPageChange} />
       </>

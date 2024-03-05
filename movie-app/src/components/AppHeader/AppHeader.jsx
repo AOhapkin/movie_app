@@ -1,6 +1,6 @@
 import React from 'react';
 import { Header } from 'antd/es/layout/layout';
-import {Tabs, Input} from 'antd';
+import {Input} from 'antd';
 
 const headerStyle = {
   textAlign: 'center',
@@ -11,26 +11,26 @@ const headerStyle = {
   alignItems: 'center'
 };
 
-function onTabsChange(key) {
-  console.log(key);
-}
+// function onTabsChange(key) {
+//   console.log(key);
+// }
 
-const tabsItems = [
-  {
-    key: '1',
-    label: 'Search',
-  },
-  {
-    key: '2',
-    label: 'Rated',
-  },
-]
+// const tabsItems = [
+//   {
+//     key: '1',
+//     label: 'Search',
+//   },
+//   {
+//     key: '2',
+//     label: 'Rated',
+//   },
+// ]
 
 // eslint-disable-next-line react/prop-types
 function AppHeader({ onQueryChange }) {
   return (
     <Header style={headerStyle}>
-      <Tabs defaultActiveKey="1" items={tabsItems} onChange={onTabsChange} />
+      {/* <Tabs defaultActiveKey="1" items={tabsItems} onChange={onTabsChange} /> */}
       <Input type='text' placeholder="Type to search..." onChange={onQueryChange} />
     </Header>
   );
