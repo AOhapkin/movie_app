@@ -26,11 +26,12 @@ const tabsItems = [
   },
 ]
 
-function AppHeader() {
+// eslint-disable-next-line react/prop-types
+function AppHeader({ onQueryChange }) {
   return (
     <Header style={headerStyle}>
       <Tabs defaultActiveKey="1" items={tabsItems} onChange={onTabsChange} />
-      <Input placeholder="Type to search..." />
+      <Input type='text' placeholder="Type to search..." onChange={onQueryChange} />
     </Header>
   );
 }

@@ -1,14 +1,22 @@
-function MovieCard() {
-  return (
-    <div className='movieCard'>
-      <div className='movieImage'>
-        <img
-          width={200}
-          src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
-        />
-      </div>
-    </div>
-  );
-}
+import { Component } from 'react';
 
-export default MovieCard;
+export default class MovieCard extends Component {
+  constructor(props) {
+    super(props);
+    this.maxOverviewLength = 240;
+  }
+
+  trimOverview(text) {
+    if (text.length > this.maxOverviewLength) {
+      const indexOfLastSpace = text.lastIndexOf(' ', this.maxOverviewLength);
+      const trimmedText = text.slice(0, indexOfLastSpace);
+      return trimmedText + '...';
+    }
+    return text;
+  }
+
+  render() {
+    const {title, date, overview, poster} = this.props;
+    
+  }
+}
