@@ -16,11 +16,11 @@ export default class App extends Component {
       currentPage: 1,
       totalPages: 10,
       isLoading: true
-    }
-  }
+    };
 
-  onPageChange(page) {
-    this.setState({currentPage: page});
+    this.onPageChange = (page) => {
+      this.setState({currentPage: page});
+    };
   }
 
   onQueryChange() {
