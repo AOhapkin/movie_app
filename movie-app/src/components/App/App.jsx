@@ -18,12 +18,16 @@ export default class App extends Component {
       totalPages: 10,
       isLoading: true
     };
-    
+
     this.onQueryChange = (evt) => {
       this.setState({ query: evt.target.value })
-    }
+    };
   
-    this.onQueryChangeDebounced = debounce(this.onQueryChange, 800)
+    this.onQueryChangeDebounced = debounce(this.onQueryChange, 800);
+
+    this.onPageChange = (page) => {
+      this.setState({currentPage: page});
+    };
   }
 
   updateMovies() {
@@ -53,10 +57,6 @@ export default class App extends Component {
     }
   }
 
-  onPageChange(page) {
-    this.setState({currentPage: page});
-  };
-
   render() {
     const {movies, currentPage, totalPages} = this.state;
 
@@ -66,7 +66,7 @@ export default class App extends Component {
       <div className='app-wrapper'>
         <AppHeader onQueryChange={this.onQueryChangeDebounced} />
         <MovieList movies={movies} />
-        <AppFooter currentPage={currentPage} totalPages={totalPages} onPageChange={this.onPageChange.bind(this)} />
+        <AppFooter currentPage={currentPage} totalPages={totalPages} onPageChange={this.onPageChange} />
       </div>
     );
   }
