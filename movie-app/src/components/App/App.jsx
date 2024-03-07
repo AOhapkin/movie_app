@@ -4,7 +4,8 @@ import { debounce } from 'lodash';
 import MoviesApiService from '../../services/movies-api';
 import AppHeader from '../AppHeader';
 import MovieList from '../MovieList/MovieList';
-import AppFooter from '../AppFooter/AppFooter'
+import AppFooter from '../AppFooter/AppFooter';
+import './App.css'
 
 export default class App extends Component {
   constructor(props) {
@@ -17,17 +18,12 @@ export default class App extends Component {
       totalPages: 10,
       isLoading: true
     };
-
-    this.onPageChange = (page) => {
-      this.setState({currentPage: page});
-    };
-  }
-
-  onQueryChange() {
-    debounce((evt) => {
-      console.log(evt.target.value);
+    
+    this.onQueryChange = (evt) => {
       this.setState({ query: evt.target.value })
-    }, 800);
+    }
+  
+    this.onQueryChangeDebounced = debounce(this.onQueryChange, 800)
   }
 
   updateMovies() {
@@ -44,7 +40,6 @@ export default class App extends Component {
 
   componentDidMount() {
     this.updateMovies()
-    // console.log(this.state.movies)
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -58,29 +53,21 @@ export default class App extends Component {
     }
   }
 
-  // onLoaded = () => {
-  //   this.setState({ isLoading: false })
-  // }
-
-  // initLoading = () => {
-  //   this.setState({ isLoading: true })
-  // }
+  onPageChange(page) {
+    this.setState({currentPage: page});
+  };
 
   render() {
-    // this.moviesApi.getSearchedMovies('Batman', 1).then(([movies, totalPages]) => {
-    //   console.log(movies);
-    //   console.log(totalPages);
-    // });
     const {movies, currentPage, totalPages} = this.state;
 
     console.log(movies)
 
     return (
-      <>
-        <AppHeader onQueryChange={this.onQueryChange.bind(this)} />
+      <div className='app-wrapper'>
+        <AppHeader onQueryChange={this.onQueryChangeDebounced} />
         <MovieList movies={movies} />
-        <AppFooter currentPage={currentPage} totalPages={totalPages} onPageChange={this.onPageChange} />
-      </>
+        <AppFooter currentPage={currentPage} totalPages={totalPages} onPageChange={this.onPageChange.bind(this)} />
+      </div>
     );
   }
 }

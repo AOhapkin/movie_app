@@ -25,7 +25,7 @@
     "linebreak-style": [0, "unix"],
     "quotes": ["error", "single"],
     "react/react-in-jsx-scope": "off",
-    "arrow-parents": "off",
+    "arrow-functions": "off",
     "import/no-unresolved": [2, { "caseSensitive": false }],
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
     "import/order": [

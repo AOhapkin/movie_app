@@ -3,8 +3,9 @@ import { Header } from 'antd/es/layout/layout';
 import {Input} from 'antd';
 
 const headerStyle = {
+  paddingTop: '20px',
+  width: '938px',
   textAlign: 'center',
-  // height: 64,
   backgroundColor: '#ffffff',
   display: 'flex',
   flexDirection: 'column',
