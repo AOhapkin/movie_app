@@ -20,6 +20,7 @@ export default class MovieList extends Component {
           date={movie.release_date}
           overview={movie.overview}
           poster={movie.poster_path}
+          rating={movie.rating}
         />
       )
     });
