@@ -8,7 +8,7 @@ import './MovieCard.css';
 export default class MovieCard extends Component {
   constructor(props) {
     super(props);
-    this.maxOverviewLength = 240;
+    this.maxOverviewLength = 180;
     this.posterUrl = 'https://image.tmdb.org/t/p/w500';
 
     this.setRating = (value) => {
@@ -38,26 +38,31 @@ export default class MovieCard extends Component {
         <div className="card__image">
           <img src={poster ? this.posterUrl + poster : NoImage} />
         </div>
-        <div className="card_description">
+        <div className="card__description">
           <h3 className='card__title'>{title}</h3>
           <p className='card__date'>{formattedMovieDate}</p>
           <ul className="genres-list">
             <li className="genres-list__item">Action</li>
             <li className="genres-list__item">Drama</li>
+            <li className="genres-list__item">Drama2</li>
+            <li className="genres-list__item">Drama2f43wg</li>
+            <li className="genres-list__item">Drama2f43wg435234</li>
           </ul>
-          <p className='card__overview'>{trimmedOverview}</p>
-          <Rate
-            allowHalf
-            className="card__rating-stars"
-            count={10}
-            allowClear={false}
-            value={rating}
-            style={{
-              fontSize: 15,
-            }}
-            defaultValue={0}
-            onChange={this.setRating}
-          />
+          <div className="card__overview">
+            <p className='overview-text'>{trimmedOverview}</p>
+            <Rate
+              allowHalf
+              className="card__rating-stars"
+              count={10}
+              allowClear={false}
+              value={rating}
+              style={{
+                fontSize: 15,
+              }}
+              defaultValue={0}
+              onChange={this.setRating}
+            />
+          </div>
         </div>
       </div>
     )

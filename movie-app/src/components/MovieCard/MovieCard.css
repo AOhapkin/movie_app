@@ -22,34 +22,49 @@
   height: 279px;
 }
 
-.card_description {
+.card__description {
   /* padding: 12px 20px 50px; */
+  padding-left: 20px;
+  padding-top: 10px;
   flex-shrink: 1;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 228px;
+  overflow: hidden;
+
+  /* justify-content: space-between; */
 }
 
 .card__title {
   padding: 0;
   margin: 0;
+  margin-bottom: 7px;
   font-size: 20px;
   line-height: 28px;
-  /* padding-bottom: 7px; */
+  margin-bottom: 7px;
 }
 
 .card__date {
   margin: 0;
+  margin-bottom: 5px;
   display: block;
   color: #827e7e;
   font-size: 12px;
   line-height: 22px;
-  padding-bottom: 7px;
 }
 
 .genres-list {
+  margin: 0;
+  margin-bottom: 5px;
+  padding: 0;
   display: flex;
   flex-direction: row;
-  list-style-type: none;
-  padding-bottom: 7px;
+  list-style: none;
   gap: 8px;
+  overflow-x: auto;
+  overflow-y: visible;
+  scrollbar-width: none;
 }
 
 .genres-list__item {
@@ -59,11 +74,26 @@
   background: #fafafa;
   color: rgba(0, 0, 0, 0.65);
   font-size: 12px;
-  line-height: normal;
-  padding: 0 4px 0 5px;
+  padding: 2px 5px 0 5px;
 }
 
 .card__overview {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.overview-text {
+  margin: 0;
+  margin-bottom: 10px;
   font-size: 12px;
   line-height: 22px;
+  font-family: 'Inter UI', 'Arial', sans-serif;
+  font-weight: 400;
+}
+
+.card__rating-stars {
+  /* margin-top: auto; */
+  padding-bottom: 15px;
 }
