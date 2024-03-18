@@ -150,6 +150,7 @@ export default class App extends Component {
             guestSessionId={guestSessionId}
             onRatingChange={this.onRatingChange}
           />
+          <AppFooter currentPage={currentPage} onChange={this.onPageChange} totalPages={totalPages} />
         </>
       ),
     }
@@ -168,6 +169,7 @@ export default class App extends Component {
             guestSessionId={guestSessionId}
             onRatingChange={this.onRatingChange}
           />
+          <AppFooter currentPage={currentPage} onChange={this.onPageChange} totalPages={totalRatedPages} />
         </>
       ),
     } 
@@ -183,7 +185,6 @@ export default class App extends Component {
             centered
             destroyInactiveTabPane
           />
-          <AppFooter currentPage={currentPage} onChange={this.onPageChange} totalPages={totalRatedPages} />
         </div>
       </GenresContext.Provider>
     );
