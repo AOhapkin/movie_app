@@ -1,8 +1,9 @@
 import {Input} from 'antd';
 
-function AppHeader({ onQueryChange }) {
+// eslint-disable-next-line react/prop-types
+function AppHeader({ onQueryChangeDelayed }) {
   return (
-    <Input type='text' placeholder="Type to search..." onChange={onQueryChange} />
+    <Input type='text' placeholder="Type to search..." onChange={onQueryChangeDelayed} />
   );
 }
 
