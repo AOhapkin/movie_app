@@ -26,7 +26,6 @@ export default class MovieCard extends Component {
   }
 
   render() {
-    // eslint-disable-next-line react/prop-types
     const {title, date, overview, poster, rating} = this.props;
     let formattedMovieDate = '';
     if (date) {
