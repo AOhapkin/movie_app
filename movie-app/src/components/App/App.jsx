@@ -54,16 +54,49 @@ export default class App extends Component {
     };
 
     this.onRatingChange = async (value, guestSessionId, movieId) => {
-      await this.apiService.postRating(value, guestSessionId, movieId)
+      await this.moviesApi.postRating(value, guestSessionId, movieId)
       localStorage.setItem(movieId, value)
     }
   }
 
+  componentDidMount() {
+    localStorage.clear()
+    this.moviesApi.createGuestSession().then((response) => {
+      this.setState({ guestSessionId: response })
+    })
+    this.saveGenres()
+    this.updateMovies()
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { query, currentPage, activeTab, guestSessionId } = this.state
+    if (guestSessionId !== prevState.guestSessionId) {
+      localStorage.clear()
+    }
+    if (query !== prevState.query && activeTab === 'Search') {
+      this.onPageChange(1)
+      this.updateMovies()
+    } else if (activeTab !== prevState.activeTab) {
+      this.onPageChange(1)
+      if (activeTab === 'Search') {
+        this.updateMovies()
+      } else {
+        this.updateRatedMovies()
+      }
+    } else if (currentPage !== prevState.currentPage) {
+      if (activeTab === 'Search') {
+        this.updateMovies()
+      } else {
+        this.updateRatedMovies()
+      }
+    }
+  }
+
+
   updateMovies() {
     this.startLoading()
     const { query, currentPage } = this.state
-    this.apiService
-      .getSearchedMovies(query, currentPage)
+    this.moviesApi.getSearchedMovies(query, currentPage)
       .then(([result, pages]) => {
         this.setState({ movies: result, totalPages: pages > 500 ? 500 : pages })
       })
@@ -74,8 +107,7 @@ export default class App extends Component {
   updateRatedMovies() {
     this.startLoading()
     const { guestSessionId, currentPage } = this.state
-    this.apiService
-      .getRatedMovies(guestSessionId, currentPage)
+    this.moviesApi.getRatedMovies(guestSessionId, currentPage)
       .then(([result, pages]) => {
         this.setState({ movies: result, totalPages: pages > 500 ? 500 : pages })
       })
@@ -83,41 +115,8 @@ export default class App extends Component {
       .catch(this.onError)
   }
 
-  componentDidMount() {
-    localStorage.clear()
-    this.apiService.createGuestSession().then((response) => {
-      this.setState({ guestSessionId: response })
-    })
-    this.saveGenresList()
-    this.updateMovieList()
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    const { query, currentPage, activeTab, guestSessionId } = this.state
-    if (guestSessionId !== prevState.guestSessionId) {
-      localStorage.clear()
-    }
-    if (query !== prevState.query && activeTab === 'Search') {
-      this.onPageChange(1)
-      this.updateMovieList()
-    } else if (activeTab !== prevState.activeTab) {
-      this.onPageChange(1)
-      if (activeTab === 'Search') {
-        this.updateMovieList()
-      } else {
-        this.updateRatedList()
-      }
-    } else if (currentPage !== prevState.currentPage) {
-      if (activeTab === 'Search') {
-        this.updateMovieList()
-      } else {
-        this.updateRatedList()
-      }
-    }
-  }
-
   saveGenres() {
-    this.apiService.getGenres()
+    this.moviesApi.getGenres()
       .then((result) => this.setState({ genresList: result }));
   }
 

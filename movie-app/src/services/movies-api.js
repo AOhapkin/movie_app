@@ -1,10 +1,9 @@
 export default class MoviesApiService {
   constructor() {
-    this.apiBaseUrl = 'https://api.themoviedb.org/3';
-    this.sessionUrl = `${this.urlBasis}authentication/guest_session/new`;
-    this.genresUrl = `${this.urlBasis}genre/movie/list?language=en`;
-    this._apiKey = 'be421c22bd5e4415008153ac9540a445';
-    this._auth = 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiZTQyMWMyMmJkNWU0NDE1MDA4MTUzYWM5NTQwYTQ0NSIsInN1YiI6IjY1ZDVkYTQzNjA5NzUwMDE2MjIyZDE5NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.nRGTWMCrIyiBf7WCHqpBp9oX0rjZnywebXsA1Jas-gQ';
+    this.urlBasis = 'https://api.themoviedb.org/3/'
+    this.sessionUrl = `${this.urlBasis}authentication/guest_session/new`
+    this.genresUrl = `${this.urlBasis}genre/movie/list?language=en`
+    this.apiKey = 'be421c22bd5e4415008153ac9540a445'
 
     this.requestOptions = {
       method: 'GET',
@@ -13,33 +12,46 @@ export default class MoviesApiService {
         Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiZTQyMWMyMmJkNWU0NDE1MDA4MTUzYWM5NTQwYTQ0NSIsInN1YiI6IjY1ZDVkYTQzNjA5NzUwMDE2MjIyZDE5NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.nRGTWMCrIyiBf7WCHqpBp9oX0rjZnywebXsA1Jas-gQ'
       }
     }
-  }
 
-  createMovieSearchUrl(query, page) {
-    return `${this.apiBaseUrl}/search/movie?query=${query}&include_adult=false&language=en-US&page=${page}`;
-  }
-
-  async getResource(url) {
-    const result = await fetch(url, this.requestOptions);
-    if (!result.ok) {
-      throw new Error(`Could not fetch ${url}. Received status ${result.status}`);
+    this.constructUrl = (query, page) => {
+      return `${this.urlBasis}search/movie?query=${query}&include_adult=false&language=en-US&page=${page}`
     }
-    return result.json();
-  }
 
-  async getSearchedMovies(query, page) {
-    const data = await this.getResource(this.createMovieSearchUrl(query, page));
-    return [data.results, data.total_pages];
+    this.constructRatedUrl = (guestSessionId, page) => {
+      return `${this.urlBasis}guest_session/${guestSessionId}/rated/movies?api_key=${this.apiKey}&language=en-US&page=${page}`
+    }
+
+    this.constructRatingUrl = (guestSessionId, movieId) => {
+      return `${this.urlBasis}movie/${movieId}/rating?api_key=${this.apiKey}&guest_session_id=${guestSessionId}`
+    }
+
+    this.getResource = async (url, options) => {
+      const result = await fetch(url, options)
+      if (!result.ok) {
+        throw new Error(`Could not fetch ${url}. Received status ${result.status}`)
+      }
+      return result.json()
+    }
   }
 
   async createGuestSession() {
-    const response = await this.getResource(this.sessionUrl, this.requestOptions);
-    return response.guest_session_id;
+    const response = await this.getResource(this.sessionUrl, this.requestOptions)
+    return response.guest_session_id
+  }
+
+  async getSearchedMovies(query, page) {
+    const data = await this.getResource(this.constructUrl(query, page), this.requestOptions)
+    return [data.results, data.total_pages]
+  }
+
+  async getRatedMovies(guestSessionId, page) {
+    const data = await this.getResource(this.constructRatedUrl(guestSessionId, page))
+    return [data.results, data.total_pages]
   }
 
   async getGenres() {
-    const data = await this.getResource(this.genresUrl, this.requestOptions);
-    return data.genres;
+    const data = await this.getResource(this.genresUrl, this.requestOptions)
+    return data.genres
   }
 
   async postRating(valueMark, guestSessionId, movieId) {
@@ -49,11 +61,6 @@ export default class MoviesApiService {
         'Content-Type': 'application/json;charset=utf-8',
       },
       body: JSON.stringify({ value: valueMark }),
-    });
-  }
-
-  async getRatedMovies(guestSessionId, page) {
-    const data = await this.getResource(this.constructRatedUrl(guestSessionId, page));
-    return [data.results, data.total_pages];
+    })
   }
 }
