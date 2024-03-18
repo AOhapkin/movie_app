@@ -6,6 +6,7 @@ import MoviesApiService from '../../services/movies-api';
 import MovieList from '../MovieList/MovieList';
 import AppHeader from '../AppHeader/AppHeader';
 import AppFooter from '../AppFooter/AppFooter';
+import GenresContext from '../GenresContext/GenresContext';
 import './App.css'
 
 export default class App extends Component {
