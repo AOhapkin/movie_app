@@ -28,91 +28,92 @@ export default class App extends Component {
     };
 
     this.onQueryChange = (evt) => {
-      this.setState({ query: evt.target.value })
+      this.setState({ query: evt.target.value });
     };
   
     this.onQueryChangeDebounced = debounce(this.onQueryChange, 800);
 
     this.onPageChange = (page) => {
+      console.log('here')
       this.setState({currentPage: page});
     };
 
     this.onError = (e) => {
-      this.setState({ error: true, errorText: e.message })
+      this.setState({ error: true, errorText: e.message });
     };
 
     this.onLoaded = () => {
-      this.setState({ loading: false })
+      this.setState({ loading: false });
     };
 
     this.startLoading = () => {
-      this.setState({ loading: true })
+      this.setState({ loading: true });
     };
 
     this.onTabChange = (key) => {
-      this.setState({ activeTab: key })
+      this.setState({ activeTab: key });
     };
 
     this.onRatingChange = async (value, guestSessionId, movieId) => {
-      await this.moviesApi.postRating(value, guestSessionId, movieId)
-      localStorage.setItem(movieId, value)
+      await this.moviesApi.postRating(value, guestSessionId, movieId);
+      localStorage.setItem(movieId, value);
     }
   }
 
   componentDidMount() {
     localStorage.clear()
     this.moviesApi.createGuestSession().then((response) => {
-      this.setState({ guestSessionId: response })
-    })
-    this.saveGenres()
-    this.updateMovies()
+      this.setState({ guestSessionId: response });
+    });
+    this.saveGenres();
+    this.updateMovies();
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { query, currentPage, activeTab, guestSessionId } = this.state
+    const { query, currentPage, activeTab, guestSessionId } = this.state;
     if (guestSessionId !== prevState.guestSessionId) {
-      localStorage.clear()
+      localStorage.clear();
     }
     if (query !== prevState.query && activeTab === 'Search') {
-      this.onPageChange(1)
-      this.updateMovies()
+      this.onPageChange(1);
+      this.updateMovies();
     } else if (activeTab !== prevState.activeTab) {
-      this.onPageChange(1)
+      this.onPageChange(1);
       if (activeTab === 'Search') {
-        this.updateMovies()
+        this.updateMovies();
       } else {
-        this.updateRatedMovies()
+        this.updateRatedMovies();
       }
     } else if (currentPage !== prevState.currentPage) {
       if (activeTab === 'Search') {
-        this.updateMovies()
+        this.updateMovies();
       } else {
-        this.updateRatedMovies()
+        this.updateRatedMovies();
       }
     }
   }
 
 
   updateMovies() {
-    this.startLoading()
-    const { query, currentPage } = this.state
+    this.startLoading();
+    const { query, currentPage } = this.state;
     this.moviesApi.getSearchedMovies(query, currentPage)
       .then(([result, pages]) => {
         this.setState({ movies: result, totalPages: pages > 500 ? 500 : pages })
       })
       .then(this.onLoaded)
-      .catch(this.onError)
+      .catch(this.onError);
   }
 
   updateRatedMovies() {
     this.startLoading();
-    const { guestSessionId, currentPage } = this.state
+    const { guestSessionId, currentPage } = this.state;
     this.moviesApi.getRatedMovies(guestSessionId, currentPage)
       .then(([result, pages]) => {
         this.setState({ movies: result, totalPages: pages > 500 ? 500 : pages })
       })
       .then(this.onLoaded)
-      .catch(this.onError)
+      .catch(this.onError);
   }
 
   saveGenres() {
@@ -139,7 +140,7 @@ export default class App extends Component {
       label: 'Search',
       children: (
         <>
-          <AppHeader onQueryChange={this.onQueryChangeDelayed} />
+          <AppHeader onQueryChange={this.onQueryChangeDebounced} />
           <MovieList
             movies={movies}
             loading={loading}
@@ -149,7 +150,7 @@ export default class App extends Component {
             guestSessionId={guestSessionId}
             onRatingChange={this.onRatingChange}
           />
-          <AppFooter currentPage={currentPage} onChange={this.onPageChange} totalPages={totalPages} />
+          <AppFooter currentPage={currentPage} onPageChange={this.onPageChange} totalPages={totalPages} />
         </>
       ),
     }
@@ -168,7 +169,7 @@ export default class App extends Component {
             guestSessionId={guestSessionId}
             onRatingChange={this.onRatingChange}
           />
-          <AppFooter currentPage={currentPage} onChange={this.onPageChange} totalPages={totalRatedPages} />
+          <AppFooter currentPage={currentPage} onPageChange={this.onPageChange} totalPages={totalRatedPages} />
         </>
       ),
     } 
