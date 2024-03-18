@@ -2,59 +2,93 @@ import { Component } from 'react';
 import { parseISO, format } from 'date-fns';
 import { Rate } from 'antd';
 
+import GenresContext from '../GenresContext/GenresContext';
+
 import NoImage from './noPoster.png';
 import './MovieCard.css';
 
 export default class MovieCard extends Component {
   constructor(props) {
-    super(props);
-    this.maxOverviewLength = 180;
-    this.posterUrl = 'https://image.tmdb.org/t/p/w500';
+    super(props)
 
-    this.setRating = (value) => {
-      console.log(value);
+    this.state = {
+      stateRating: null,
+    }
+
+    this.collapseOverview = (text, length) => {
+      if (text.length > length) {
+        const spaceIndex = text.indexOf(' ', length - 5);
+        return spaceIndex !== -1 ? `${text.slice(0, spaceIndex)} ...` : `${text}`;
+      }
+      return text;
+    }
+
+    this.getRelatedGenres = (allGenres, neededGenres) => {
+      return allGenres.filter((elem) => {
+        return neededGenres.includes(elem.id);
+      });
+    }
+
+    this.setRating = (ratingValue) => {
+      const { guestSessionId, movieId, onRatingChange } = this.props;
+      onRatingChange(ratingValue, guestSessionId, movieId);
+      this.setState(() => {
+        return { stateRating: ratingValue };
+      });
     }
   }
 
-  trimOverview(text) {
-    if (text.length > this.maxOverviewLength) {
-      const indexOfLastSpace = text.lastIndexOf(' ', this.maxOverviewLength);
-      const trimmedText = text.slice(0, indexOfLastSpace);
-      return trimmedText + '...';
-    }
-    return text;
-  }
+  
 
   render() {
-    const {title, date, overview, poster, rating} = this.props;
-    let formattedMovieDate = '';
-    if (date) {
-      formattedMovieDate = format(parseISO(date), 'MMMM d, y');
+    const { title, date, overview, posterEndpoint, globalRating, genres, rating } = this.props
+    const { stateRating } = this.state
+    const allGenres = this.context
+    const posterPath = 'https://image.tmdb.org/t/p/w500'
+    const formattedDate = date === '' || undefined ? '' : format(parseISO(date), 'MMMM d, y')
+    let ratingClassnames = 'card__rating'
+    if (globalRating < 3) {
+      ratingClassnames += ' card__rating--red'
+    } else if (globalRating < 5) {
+      ratingClassnames += ' card__rating--orange'
+    } else if (globalRating < 7) {
+      ratingClassnames += ' card__rating--yellow'
+    } else if (globalRating >= 7) {
+      ratingClassnames += ' card__rating--green'
+    } else {
+      ratingClassnames += ' card__rating--no-rating'
     }
-    const trimmedOverview = this.trimOverview(overview);
+    const genresList = this.getRelatedGenres(allGenres, genres)
+    const genresElements = genresList.map((genre) => {
+      return (
+        <li key={genre.id} className="card__genre">
+          {genre.name}
+        </li>
+      )
+    })
+
     return (
       <div className="card">
-        <div className="card__image">
-          <img src={poster ? this.posterUrl + poster : NoImage} />
+        <div className="card__image-block">
+          <img
+            className="card__image"
+            alt="Film Poster"
+            src={posterEndpoint ? posterPath + posterEndpoint : NoImage}
+          />
         </div>
-        <div className="card__description">
-          <h3 className='card__title'>{title}</h3>
-          <p className='card__date'>{formattedMovieDate}</p>
-          <ul className="genres-list">
-            <li className="genres-list__item">Action</li>
-            <li className="genres-list__item">Drama</li>
-            <li className="genres-list__item">Drama2</li>
-            <li className="genres-list__item">Drama2f43wg</li>
-            <li className="genres-list__item">Drama2f43wg435234</li>
-          </ul>
-          <div className="card__overview">
-            <p className='overview-text'>{trimmedOverview}</p>
+        <div className="card__information">
+          <div className={ratingClassnames}>{globalRating.toFixed(1)}</div>
+          <h3 className="card__header"> {this.collapseOverview(title, 30)}</h3>
+          <span className="card__date">{formattedDate}</span>
+          <ul className="card__genres">{genresElements}</ul>
+          <div className="card__text-and-rate">
+            <p className="card__description">{this.collapseOverview(overview, 165)}</p>
             <Rate
               allowHalf
-              className="card__rating-stars"
+              className="card__stars"
               count={10}
               allowClear={false}
-              value={rating}
+              value={stateRating || rating}
               style={{
                 fontSize: 15,
               }}
@@ -67,3 +101,5 @@ export default class MovieCard extends Component {
     )
   }
 }
+
+MovieCard.contextType = GenresContext;
