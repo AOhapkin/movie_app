@@ -105,7 +105,7 @@ export default class App extends Component {
   }
 
   updateRatedMovies() {
-    this.startLoading()
+    this.startLoading();
     const { guestSessionId, currentPage } = this.state
     this.moviesApi.getRatedMovies(guestSessionId, currentPage)
       .then(([result, pages]) => {

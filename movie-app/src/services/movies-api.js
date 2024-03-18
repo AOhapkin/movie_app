@@ -26,32 +26,33 @@ export default class MoviesApiService {
     }
 
     this.getResource = async (url, options) => {
-      const result = await fetch(url, options)
+      const result = await fetch(url, options);
       if (!result.ok) {
-        throw new Error(`Could not fetch ${url}. Received status ${result.status}`)
+        throw new Error(`Could not fetch ${url}. Received status ${result.status}`);
       }
-      return result.json()
+      return result.json();
     }
   }
 
   async createGuestSession() {
-    const response = await this.getResource(this.sessionUrl, this.requestOptions)
-    return response.guest_session_id
+    const response = await this.getResource(this.sessionUrl, this.requestOptions);
+    return response.guest_session_id;
   }
 
   async getSearchedMovies(query, page) {
-    const data = await this.getResource(this.constructUrl(query, page), this.requestOptions)
-    return [data.results, data.total_pages]
+    const data = await this.getResource(this.constructUrl(query, page), this.requestOptions);
+    return [data.results, data.total_pages];
   }
 
   async getRatedMovies(guestSessionId, page) {
-    const data = await this.getResource(this.constructRatedUrl(guestSessionId, page))
-    return [data.results, data.total_pages]
+    // console.log('data');
+    const data = await this.getResource(this.constructRatedUrl(guestSessionId, page));
+    return [data.results, data.total_pages];
   }
 
   async getGenres() {
-    const data = await this.getResource(this.genresUrl, this.requestOptions)
-    return data.genres
+    const data = await this.getResource(this.genresUrl, this.requestOptions);
+    return data.genres;
   }
 
   async postRating(valueMark, guestSessionId, movieId) {
