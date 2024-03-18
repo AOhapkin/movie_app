@@ -29,14 +29,14 @@ export default function MovieList({ movies, loading, error, errorText, guestSess
   const content = !loading && !error ? moviesElements : null;
 
   return (
-    <div className="movie-list">
-      <Online className="movie-list__online">
+    <div className="movies-list">
+      <Online>
         {loading && !error ? <LoadingSpinner /> : null}
         {error ? <ErrorMessage messageText={errorText} /> : null}
         {content}
         {moviesElements.length === 0 && !loading ? <p>Нет фильмов по вашему запросу</p> : null}
       </Online>
-      <Offline className="movie-list__offline">
+      <Offline>
         <ErrorMessage messageText="Нет связи с сервером" />
       </Offline>
     </div>

@@ -11,13 +11,13 @@
   box-shadow: 0 12px 35px 0 rgba(0, 0, 0, 0.35);
 }
 
-.card__image {
+.card__image-block {
   width: 183px;
   height: 281px;
   flex-shrink: 0;
 }
 
-.card__image-block {
+.card__image {
   width: 183px;
   height: 281px;
   flex-shrink: 0;
@@ -33,9 +33,7 @@
 .card__header {
   font-size: 20px;
   line-height: 28px;
-  padding-bottom: 7px;
-  display: inline;
-  /*width: 210px;*/
+  width: 170px;
 }
 
 .card__date {

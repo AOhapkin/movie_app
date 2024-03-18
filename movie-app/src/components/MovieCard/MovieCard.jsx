@@ -11,14 +11,25 @@ export default class MovieCard extends Component {
   constructor(props) {
     super(props)
 
+    this.maxOverviewLength = 160;
+    this.maxMovieTitleLength = 20;
     this.state = {
       stateRating: null,
     }
 
-    this.collapseOverview = (text, length) => {
-      if (text.length > length) {
-        const spaceIndex = text.indexOf(' ', length - 5);
-        return spaceIndex !== -1 ? `${text.slice(0, spaceIndex)} ...` : `${text}`;
+    this.trimOverview = (text) => {
+      if (text.length > this.maxOverviewLength) {
+        const indexOfLastSpace = text.lastIndexOf(' ', this.maxOverviewLength);
+        const trimmedText = text.slice(0, indexOfLastSpace);
+        return trimmedText + '...';
+      }
+      return text;
+    }
+
+    this.trimMovieTitle = (text) => {
+      if (text.length > this.maxMovieTitleLength) {
+        const trimmedTitle = text.slice(0, this.maxMovieTitleLength);
+        return trimmedTitle + '...';
       }
       return text;
     }
@@ -37,8 +48,6 @@ export default class MovieCard extends Component {
       });
     }
   }
-
-  
 
   render() {
     const { title, date, overview, posterEndpoint, globalRating, genres, rating } = this.props
@@ -78,11 +87,11 @@ export default class MovieCard extends Component {
         </div>
         <div className="card__information">
           <div className={ratingClassnames}>{globalRating.toFixed(1)}</div>
-          <h3 className="card__header"> {this.collapseOverview(title, 30)}</h3>
+          <h3 className="card__header"> {this.trimMovieTitle(title)}</h3>
           <span className="card__date">{formattedDate}</span>
           <ul className="card__genres">{genresElements}</ul>
           <div className="card__text-and-rate">
-            <p className="card__description">{this.collapseOverview(overview, 165)}</p>
+            <p className="card__description">{this.trimOverview(overview)}</p>
             <Rate
               allowHalf
               className="card__stars"

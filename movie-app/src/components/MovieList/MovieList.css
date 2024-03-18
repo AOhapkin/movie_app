@@ -1,8 +1,9 @@
-.movies-list {
+.movies-list > span {
   width: 100%;
   padding-bottom: 36px;
   display: flex;
   flex-wrap: wrap;
   gap: 36px;
   justify-content: center;
+  padding-left: 0;
 }

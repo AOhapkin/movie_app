@@ -175,7 +175,7 @@ export default class App extends Component {
 
     return (
       <GenresContext.Provider value={genresList}>
-        <div className="wrapper">
+        <div className="app-wrapper">
           <Tabs
             items={ [searchTab, ratedTab] }
             size="large"
