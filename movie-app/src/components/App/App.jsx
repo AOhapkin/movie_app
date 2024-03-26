@@ -28,6 +28,22 @@ export default class App extends Component {
       activeTab: 'Search',
     };
 
+    this.saveGuestId = () => {
+      const guestId = localStorage.getItem('guestId');
+
+
+      if (guestId) {
+        this.setState({ guestSessionId: guestId });
+      } else {
+        this.moviesApi.getGuestSessionId()
+          .then((newGuestId) => {
+            this.setState({ guestSessionId: newGuestId });
+            localStorage.setItem('guestId', newGuestId);
+          })
+          .catch(this.onError);
+      }
+    }
+
     this.onQueryChange = (evt) => {
       this.setState({ query: evt.target.value });
     };
@@ -64,12 +80,10 @@ export default class App extends Component {
   }
 
   componentDidMount() {
-    // localStorage.clear()
-    this.moviesApi.createGuestSession().then((response) => {
-      this.setState({ guestSessionId: response });
-    });
     this.saveGenres();
-    this.updateMovies();
+    console.log(this.state.genresList)
+    this.saveGuestId();
+    console.log(this.state.guestId)
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -121,7 +135,8 @@ export default class App extends Component {
 
   saveGenres() {
     this.moviesApi.getGenres()
-      .then((result) => this.setState({ genresList: result }));
+      .then((result) => this.setState({ genresList: result }))
+      .catch(this.onError);
   }
 
   render() {
