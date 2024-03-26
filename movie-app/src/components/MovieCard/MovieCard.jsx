@@ -35,7 +35,7 @@ export default class MovieCard extends Component {
     }
 
     this.getRelatedGenres = (allGenres, neededGenres) => {
-      return allGenres.filter((elem) => {
+      return allGenres.genres.filter((elem) => {
         return neededGenres.includes(elem.id);
       });
     }
@@ -52,7 +52,9 @@ export default class MovieCard extends Component {
   render() {
     const { title, date, overview, posterEndpoint, globalRating, genres, rating } = this.props
     const { stateRating } = this.state
-    const allGenres = this.context
+    const allGenres = this.context;
+    console.log('allGenres', allGenres)
+    console.log('genres', genres)
     const posterPath = 'https://image.tmdb.org/t/p/w500'
     const formattedDate = date === '' || undefined ? '' : format(parseISO(date), 'MMMM d, y')
     let ratingClassnames = 'card__rating'
@@ -67,7 +69,9 @@ export default class MovieCard extends Component {
     } else {
       ratingClassnames += ' card__rating--no-rating'
     }
-    const genresList = this.getRelatedGenres(allGenres, genres)
+
+    const genresList = this.getRelatedGenres(allGenres, genres);
+
     const genresElements = genresList.map((genre) => {
       return (
         <li key={genre.id} className="card__genre">

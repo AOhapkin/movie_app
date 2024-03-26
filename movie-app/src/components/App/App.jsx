@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { debounce } from 'lodash';
+import { debounce, result } from 'lodash';
 import { Tabs } from 'antd';
 
 import MoviesApiService from '../../services/movies-api';
@@ -14,7 +14,7 @@ export default class App extends Component {
     super(props);
     this.moviesApi = new MoviesApiService();
     this.state = {
-      query: 'Batman',
+      query: '',
       movies: [],
       ratedMovies: [],
       genresList: [],
@@ -31,7 +31,6 @@ export default class App extends Component {
     this.saveGuestId = () => {
       const guestId = localStorage.getItem('guestId');
 
-
       if (guestId) {
         this.setState({ guestSessionId: guestId });
       } else {
@@ -45,7 +44,35 @@ export default class App extends Component {
     }
 
     this.onQueryChange = (evt) => {
-      this.setState({ query: evt.target.value });
+      const newQuery = evt.target.value.trim();
+
+      console.log(newQuery)
+
+      if (newQuery === '') {
+        this.setState({query: ''})
+        return;
+      }
+
+      this.setState({ isLoading: true });
+
+      this.moviesApi
+        .getAllMovies(newQuery)
+        .then((resp) => {
+          this.setState({ 
+            query: newQuery,
+            movies: resp.results,
+            totalPages: resp.total_pages,
+            loading: false
+          });
+          // if (resp.reults.length > 0) {
+          // }
+        })
+        .catch((e) => {
+          this.setState({ loading: false });
+          this.onError(e);
+        });
+      console.log(this.state.movies);
+      this.setState({query: ''})
     };
   
     this.onQueryChangeDebounced = debounce(this.onQueryChange, 800);
@@ -81,45 +108,7 @@ export default class App extends Component {
 
   componentDidMount() {
     this.saveGenres();
-    console.log(this.state.genresList)
     this.saveGuestId();
-    console.log(this.state.guestId)
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    const { query, currentPage, activeTab, guestSessionId } = this.state;
-    if (guestSessionId !== prevState.guestSessionId) {
-      localStorage.clear();
-    }
-    if (query !== prevState.query && activeTab === 'Search') {
-      this.onPageChange(1);
-      this.updateMovies();
-    } else if (activeTab !== prevState.activeTab) {
-      this.onPageChange(1);
-      if (activeTab === 'Search') {
-        this.updateMovies();
-      } else {
-        this.updateRatedMovies();
-      }
-    } else if (currentPage !== prevState.currentPage) {
-      if (activeTab === 'Search') {
-        this.updateMovies();
-      } else {
-        this.updateRatedMovies();
-      }
-    }
-  }
-
-
-  updateMovies() {
-    this.startLoading();
-    const { query, currentPage } = this.state;
-    this.moviesApi.getSearchedMovies(query, currentPage)
-      .then(([result, pages]) => {
-        this.setState({ movies: result, totalPages: pages > 50 ? 50 : pages })
-      })
-      .then(this.onLoaded)
-      .catch((e) => this.onError(e));
   }
 
   updateRatedMovies() {
