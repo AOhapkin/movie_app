@@ -89,8 +89,8 @@ export default class App extends Component {
     };
 
     this.onTabChange = (key) => {
-      console.log('Tab change')
       this.setState({ activeTab: key });
+      console.log('Current tab: ', this.state.activeTab)
     };
 
     this.onRatingChange = async (value, guestSessionId, movieId) => {
@@ -98,11 +98,12 @@ export default class App extends Component {
     }
 
     this.getRated = () => {
-      return this.moviesApi.getRatedSession(this.guestSessionId, 1);
+      console.log(this.state.guestSessionId)
+      return this.moviesApi.getRatedSession(this.state.guestSessionId, 1);
     }
 
     this.getRatedPage = (page) => {
-      return this.moviesApi.getRatedSession(this.guestSessionId, page);
+      return this.moviesApi.getRatedSession(this.state.guestSessionId, page);
     }
   }
 
@@ -130,33 +131,38 @@ export default class App extends Component {
       totalRatedPages,
       guestSessionId,
       genresList,
+      activeTab
     } = this.state;
 
     const searchTab = {
       key: 'Search',
-      label: 'Search',
-      children: (
-        <>
-          <AppHeader onQueryChange={this.onQueryChangeDebounced} />
-          <MovieList
-            movies={movies}
-            loading={loading}
-            error={error}
-            query={query}
-            errorText={errorText}
-            guestSessionId={guestSessionId}
-            onRatingChange={this.onRatingChange}
-          />
-          <AppFooter currentPage={currentPage} onPageChange={this.onPageChange} totalPages={totalPages} />
-        </>
-      ),
+      label: 'Search'
     }
 
     const ratedTab = {
       key: 'Rated',
-      label: 'Rated',
-      children: (
-        ratedMovies.length ?
+      label: 'Rated'
+    }
+
+    const currentTab = (tab) => {
+      if (tab === 'Search') {
+        return (
+          <>
+            <AppHeader onQueryChange={this.onQueryChangeDebounced} />
+            <MovieList
+              movies={movies}
+              loading={loading}
+              error={error}
+              query={query}
+              errorText={errorText}
+              guestSessionId={guestSessionId}
+              onRatingChange={this.onRatingChange}
+            />
+            <AppFooter currentPage={currentPage} onPageChange={this.onPageChange} totalPages={totalPages} />
+          </>
+        );
+      } else if (tab === 'Rated') {
+        return (
           <>
             <RatedMovieList
               loading={loading}
@@ -169,10 +175,9 @@ export default class App extends Component {
             />
             <AppFooter currentPage={currentPage} onPageChange={this.onPageChange} totalPages={totalRatedPages} />
           </>
-          :
-          <div>Пока нет фильмов с вашей оценкой</div>
-      ),
-    } 
+        )
+      }
+    }
 
     return (
       <GenresContext.Provider value={genresList}>
@@ -185,6 +190,7 @@ export default class App extends Component {
             centered
             destroyInactiveTabPane
           />
+          {currentTab(activeTab)}
         </div>
       </GenresContext.Provider>
     );
