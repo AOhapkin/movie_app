@@ -29,7 +29,7 @@ export default class MoviesApiService {
     }
   }
 
-  async getSession(guestSessionId, page) {
+  async getRatedSession(guestSessionId, page) {
     const url = new URL(
       `3/guest_session/${guestSessionId}/rated/movies`,
       this.urlBasis,
@@ -115,6 +115,7 @@ export default class MoviesApiService {
       if (!result.ok) {
         throw new Error(`Failed to post rating. Movie ID : ${movieId}`);
       }
+      console.log(result)
       return result;
     } catch (e) {
       throw new Error(`Failed to post rating. Movie ID : ${movieId}`, e.message);
