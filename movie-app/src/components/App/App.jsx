@@ -16,6 +16,7 @@ export default class App extends Component {
     this.state = {
       query: 'Batman',
       movies: [],
+      ratedMovies: [],
       genresList: [],
       currentPage: 1,
       totalPages: 5,
@@ -57,11 +58,13 @@ export default class App extends Component {
     this.onRatingChange = async (value, guestSessionId, movieId) => {
       await this.moviesApi.postRating(value, guestSessionId, movieId);
       localStorage.setItem(movieId, value);
+      console.log(localStorage.getItem(movieId))
+      console.log(this.state.ratedMovies)
     }
   }
 
   componentDidMount() {
-    localStorage.clear()
+    // localStorage.clear()
     this.moviesApi.createGuestSession().then((response) => {
       this.setState({ guestSessionId: response });
     });
@@ -99,10 +102,10 @@ export default class App extends Component {
     const { query, currentPage } = this.state;
     this.moviesApi.getSearchedMovies(query, currentPage)
       .then(([result, pages]) => {
-        this.setState({ movies: result, totalPages: pages > 500 ? 500 : pages })
+        this.setState({ movies: result, totalPages: pages > 50 ? 50 : pages })
       })
       .then(this.onLoaded)
-      .catch(this.onError);
+      .catch((e) => this.onError(e));
   }
 
   updateRatedMovies() {
@@ -110,10 +113,10 @@ export default class App extends Component {
     const { guestSessionId, currentPage } = this.state;
     this.moviesApi.getRatedMovies(guestSessionId, currentPage)
       .then(([result, pages]) => {
-        this.setState({ movies: result, totalPages: pages > 500 ? 500 : pages })
+        console.log(result)
+        this.setState({ ratedMovies: result, totalPages: pages > 500 ? 500 : pages })
       })
-      .then(this.onLoaded)
-      .catch(this.onError);
+      .catch((e) => this.onError(e));
   }
 
   saveGenres() {
@@ -124,6 +127,7 @@ export default class App extends Component {
   render() {
     const {
       movies,
+      ratedMovies,
       loading,
       error,
       query,
@@ -159,18 +163,21 @@ export default class App extends Component {
       key: 'Rated',
       label: 'Rated',
       children: (
-        <>
-          <MovieList
-            movies={movies}
-            loading={loading}
-            error={error}
-            query={query}
-            errorText={errorText}
-            guestSessionId={guestSessionId}
-            onRatingChange={this.onRatingChange}
-          />
-          <AppFooter currentPage={currentPage} onPageChange={this.onPageChange} totalPages={totalRatedPages} />
-        </>
+        ratedMovies.length ?
+          <>
+            <MovieList
+              movies={ratedMovies}
+              loading={loading}
+              error={error}
+              query={query}
+              errorText={errorText}
+              guestSessionId={guestSessionId}
+              onRatingChange={this.onRatingChange}
+            />
+            <AppFooter currentPage={currentPage} onPageChange={this.onPageChange} totalPages={totalRatedPages} />
+          </>
+          :
+          <div>Пока нет фильмов с вашей оценкой</div>
       ),
     } 
 
