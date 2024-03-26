@@ -50,14 +50,13 @@ export default class MovieCard extends Component {
   }
 
   render() {
-    const { title, date, overview, posterEndpoint, globalRating, genres, rating } = this.props
-    const { stateRating } = this.state
+    const { title, date, overview, posterEndpoint, globalRating, genres, rating } = this.props;
+    const { stateRating } = this.state;
     const allGenres = this.context;
-    console.log('allGenres', allGenres)
-    console.log('genres', genres)
-    const posterPath = 'https://image.tmdb.org/t/p/w500'
-    const formattedDate = date === '' || undefined ? '' : format(parseISO(date), 'MMMM d, y')
-    let ratingClassnames = 'card__rating'
+    const posterPath = 'https://image.tmdb.org/t/p/w500';
+    const formattedDate = date === '' || undefined ? '' : format(parseISO(date), 'MMMM d, y');
+    
+    let ratingClassnames = 'card__rating';
     if (globalRating < 3) {
       ratingClassnames += ' card__rating--red'
     } else if (globalRating < 5) {
