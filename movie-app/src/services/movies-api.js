@@ -11,32 +11,7 @@ export default class MoviesApiService {
         Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiZTQyMWMyMmJkNWU0NDE1MDA4MTUzYWM5NTQwYTQ0NSIsInN1YiI6IjY1ZDVkYTQzNjA5NzUwMDE2MjIyZDE5NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.nRGTWMCrIyiBf7WCHqpBp9oX0rjZnywebXsA1Jas-gQ'
       }
     }
-
-//     this.constructUrl = (query, page) => {
-//       return `${this.urlBasis}search/movie?query=${query}&include_adult=false&language=en-US&page=${page}`
-//     }
-
-//     this.constructRatedUrl = (guestSessionId, page) => {
-//       return `${this.urlBasis}guest_session/${guestSessionId}/rated/movies?api_key=${this.apiKey}&language=en-US&page=${page}`
-//     }
-
-//     this.constructRatingUrl = (guestSessionId, movieId) => {
-//       return `${this.urlBasis}movie/${movieId}/rating?api_key=${this.apiKey}&guest_session_id=${guestSessionId}`
-//     }
-
-//     this.getResource = async (url, options) => {
-//       const result = await fetch(url, options);
-//       if (!result.ok) {
-//         throw new Error(`Could not fetch ${url}. Received status ${result.status}`);
-//       }
-//       return result.json();
-//     }
   }
-
-//   async createGuestSession() {
-//     const response = await this.getResource(this.sessionUrl, this.requestOptions);
-//     return response.guest_session_id;
-//   }
 
   async getGuestSessionId() {
     const url = new URL(this.guestSessionUrlEnding, this.urlBasis);
@@ -90,15 +65,6 @@ export default class MoviesApiService {
     }
   }
 
-//   async getSearchedMovies(query, page) {
-//     try {
-//       const data = await this.getResource(this.constructUrl(query, page), this.requestOptions);
-//       return [data.results, data.total_pages];
-//     } catch (e) {
-//       console.error(e.message)
-//     }
-//   }
-
   async getSearchedMoviesByPage(query, page) {
     const url = new URL('3/search/movie', this.urlBasis);
     url.searchParams.set('api_key', this.apiKey);
@@ -116,20 +82,6 @@ export default class MoviesApiService {
     }
   }
 
-//   async getRatedMovies(guestSessionId, page) {
-//     try {
-//       const data = await this.getResource(this.constructRatedUrl(guestSessionId, page));
-//       return [data.results, data.total_pages];
-//     } catch (e) {
-//       console.error(e.message)
-//     }
-//   }
-
-//   async getGenres() {
-//     const data = await this.getResource(this.genresUrl, this.requestOptions);
-//     return data.genres;
-//   }
-
   async getGenres() {
     const url = new URL('3/genre/movie/list', this.urlBasis);
     url.searchParams.set('language', 'en');
@@ -145,16 +97,6 @@ export default class MoviesApiService {
       throw new Error('Failed to fetch genres', e.message);
     }
   }
-
-//   async postRating(valueMark, guestSessionId, movieId) {
-//     return this.getResource(this.constructRatingUrl(guestSessionId, movieId), {
-//       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/json;charset=utf-8',
-//       },
-//       body: JSON.stringify({ value: valueMark }),
-//     })
-//   }
 
   async postRating(value, guestSessionId, movieId) {
     const url = new URL(`3/movie/${movieId}/rating`, this.urlBasis);
