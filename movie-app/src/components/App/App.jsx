@@ -22,11 +22,12 @@ export default class App extends Component {
       currentPage: 1,
       totalPages: 5,
       totalRatedPages: 1,
-      loading: true,
+      loading: false,
       error: false,
       errorText: null,
       guestSessionId: null,
       activeTab: 'Search',
+      hasRated: false,
     };
 
     this.saveGuestId = () => {
@@ -95,6 +96,9 @@ export default class App extends Component {
 
     this.onRatingChange = async (value, guestSessionId, movieId) => {
       await this.moviesApi.postRating(value, guestSessionId, movieId);
+      this.setState({
+        hasRated: true
+      })
     }
 
     this.getRated = () => {
@@ -131,7 +135,8 @@ export default class App extends Component {
       totalRatedPages,
       guestSessionId,
       genresList,
-      activeTab
+      activeTab,
+      hasRated
     } = this.state;
 
     const searchTab = {
@@ -172,6 +177,7 @@ export default class App extends Component {
               getRatedPage={this.getRatedPage}
               onRatingChange={this.onRatingChange}
               guestSessionId={guestSessionId}
+              hasRated={hasRated}
             />
             <AppFooter currentPage={currentPage} onPageChange={this.onPageChange} totalPages={totalRatedPages} />
           </>

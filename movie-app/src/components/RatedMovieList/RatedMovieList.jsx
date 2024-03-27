@@ -8,8 +8,8 @@ import ErrorMessage from '../ErrorMessage/ErrorMessage';
 import '../MovieList/MovieList.css';
 
 export default class RatedMovieList extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       ratedMovies: [],
       ratedMoviesNumber: 0,
@@ -18,17 +18,22 @@ export default class RatedMovieList extends Component {
     }
 
     this.getRated = () => {
-      this.props
-        .getRated()
-        .then(res => {
-          this.setState({
-            ratedMovies: res.results,
-            ratedMoviesNumber: res.total_results,
-            page: res.page,
-            totalPages: res.total_pages
+      if (this.props.hasRated) {
+        this.props
+          .getRated()
+          .then(res => {
+            this.setState({
+              ratedMovies: res.results,
+              ratedMoviesNumber: res.total_results,
+              page: res.page,
+              totalPages: res.total_pages
+            });
+          })
+          .catch(e => {
+            console.log('getRated error')
+            this.props.onError(e);
           });
-        })
-        .catch(e => this.props.onError(e));
+      }
     }
 
     this.getRatedPage = (page) => {
@@ -79,7 +84,7 @@ export default class RatedMovieList extends Component {
           {loading && !error ? <LoadingSpinner /> : null}
           {error ? <ErrorMessage messageText={errorText} /> : null}
           {content}
-          {moviesElements.length === 0 && !loading ? <p>Нет фильмов по вашему запросу</p> : null}
+          {moviesElements.length === 0 && !loading ? <p>Пока нет фильмов с оценками</p> : null}
         </Online>
         <Offline>
           <ErrorMessage messageText="Нет связи с сервером" />
