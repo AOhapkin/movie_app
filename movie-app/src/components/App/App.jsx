@@ -20,7 +20,7 @@ export default class App extends Component {
       ratedMovies: [],
       genresList: [],
       currentPage: 1,
-      totalPages: 5,
+      totalPages: 1,
       totalRatedPages: 1,
       loading: false,
       error: false,
@@ -76,7 +76,22 @@ export default class App extends Component {
     this.onQueryChangeDebounced = debounce(this.onQueryChange, 800);
 
     this.onPageChange = (page) => {
-      this.setState({currentPage: page});
+      this.setState({
+        loading: true
+      });
+      this.moviesApi
+        .getSearchedMoviesByPage(this.state.query, page)
+        .then((resp) => {
+          this.setState({
+            movies: resp.results,
+            currentPage: resp.page,
+            loading: false
+          })
+        })
+        .catch((e) => {
+          this.setState({loading: false});
+          this.onError(e);
+        })
     };
 
     this.onError = (e) => {
@@ -127,7 +142,6 @@ export default class App extends Component {
   render() {
     const {
       movies,
-      ratedMovies,
       loading,
       error,
       query,
@@ -166,8 +180,11 @@ export default class App extends Component {
               guestSessionId={guestSessionId}
               onRatingChange={this.onRatingChange}
               isFirstInit={isFirstInit}
+              currentPage={currentPage}
+              onPageChange={this.onPageChange}
+              totalPages={totalPages}
             />
-            <AppFooter currentPage={currentPage} onPageChange={this.onPageChange} totalPages={totalPages} />
+            {/* <AppFooter currentPage={currentPage} onPageChange={this.onPageChange} totalPages={totalPages} /> */}
           </>
         );
       } else if (tab === 'Rated') {

@@ -3,11 +3,21 @@ import { Online, Offline } from 'react-detect-offline';
 import MovieCard from '../MovieCard/MovieCard';
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
+import AppFooter from '../AppFooter/AppFooter';
 import './MovieList.css';
 
-// eslint-disable-next-line react/prop-types
-export default function MovieList({ movies, loading, error, errorText, guestSessionId, onRatingChange, isFirstInit }) {
-  // eslint-disable-next-line react/prop-types
+export default function MovieList({ 
+  movies,
+  loading,
+  error, 
+  errorText,
+  guestSessionId,
+  onRatingChange,
+  isFirstInit,
+  currentPage,
+  onPageChange,
+  totalPages 
+}) {
   const moviesElements = movies.map((movie) => {
     return (
       <MovieCard
@@ -28,6 +38,14 @@ export default function MovieList({ movies, loading, error, errorText, guestSess
 
   const content = !loading && !error ? moviesElements : null;
 
+  const pagination = (pages) => {
+    console.log('total pages: ', totalPages)
+    if (pages > 1) {
+      return <AppFooter currentPage={currentPage} onPageChange={onPageChange} totalPages={totalPages} />
+    }
+    return null;
+  }
+
   return (
     <div className="movies-list">
       <Online>
@@ -35,6 +53,7 @@ export default function MovieList({ movies, loading, error, errorText, guestSess
         {error ? <ErrorMessage messageText={errorText} /> : null}
         {content}
         {moviesElements.length === 0 && !loading && !isFirstInit ? <p>Нет фильмов по вашему запросу</p> : null}
+        {pagination(totalPages)}
       </Online>
       <Offline>
         <ErrorMessage messageText="Нет связи с сервером" />

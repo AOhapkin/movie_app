@@ -8,7 +8,13 @@ function AppFooter({ currentPage, totalPages, onPageChange }) {
   return (
     <div className='footer-wrapper'>
       <Online>
-        <Pagination defaultCurrent={1} current={currentPage} onChange={onPageChange} total={totalPages} pageSize={6} />
+        <Pagination 
+          defaultCurrent={currentPage}
+          onChange={onPageChange}
+          total={totalPages}
+          showSizeChanger={false}
+          pageSize={1}
+        />
       </Online>
     </div>
   );
