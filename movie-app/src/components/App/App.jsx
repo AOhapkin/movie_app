@@ -28,6 +28,7 @@ export default class App extends Component {
       guestSessionId: null,
       activeTab: 'Search',
       hasRated: false,
+      isFirstInit: true
     };
 
     this.saveGuestId = () => {
@@ -62,7 +63,8 @@ export default class App extends Component {
             query: newQuery,
             movies: resp.results,
             totalPages: resp.total_pages,
-            loading: false
+            loading: false,
+            isFirstInit: false
           });
         })
         .catch((e) => {
@@ -136,7 +138,8 @@ export default class App extends Component {
       guestSessionId,
       genresList,
       activeTab,
-      hasRated
+      hasRated,
+      isFirstInit
     } = this.state;
 
     const searchTab = {
@@ -162,6 +165,7 @@ export default class App extends Component {
               errorText={errorText}
               guestSessionId={guestSessionId}
               onRatingChange={this.onRatingChange}
+              isFirstInit={isFirstInit}
             />
             <AppFooter currentPage={currentPage} onPageChange={this.onPageChange} totalPages={totalPages} />
           </>

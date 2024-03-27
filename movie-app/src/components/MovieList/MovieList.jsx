@@ -6,7 +6,7 @@ import ErrorMessage from '../ErrorMessage/ErrorMessage';
 import './MovieList.css';
 
 // eslint-disable-next-line react/prop-types
-export default function MovieList({ movies, loading, error, errorText, guestSessionId, onRatingChange }) {
+export default function MovieList({ movies, loading, error, errorText, guestSessionId, onRatingChange, isFirstInit }) {
   // eslint-disable-next-line react/prop-types
   const moviesElements = movies.map((movie) => {
     return (
@@ -34,7 +34,7 @@ export default function MovieList({ movies, loading, error, errorText, guestSess
         {loading && !error ? <LoadingSpinner /> : null}
         {error ? <ErrorMessage messageText={errorText} /> : null}
         {content}
-        {moviesElements.length === 0 && !loading ? <p>Нет фильмов по вашему запросу</p> : null}
+        {moviesElements.length === 0 && !loading && !isFirstInit ? <p>Нет фильмов по вашему запросу</p> : null}
       </Online>
       <Offline>
         <ErrorMessage messageText="Нет связи с сервером" />
