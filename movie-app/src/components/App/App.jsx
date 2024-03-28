@@ -1,11 +1,11 @@
 import { Component } from 'react';
-import { debounce } from 'lodash';
+import { debounce, result } from 'lodash';
 import { Tabs } from 'antd';
 
 import MoviesApiService from '../../services/movies-api';
 import MovieList from '../MovieList/MovieList';
+import RatedMovieList from '../RatedMovieList/RatedMovieList';
 import AppHeader from '../AppHeader/AppHeader';
-import AppFooter from '../AppFooter/AppFooter';
 import GenresContext from '../GenresContext/GenresContext';
 import './App.css'
 
@@ -14,28 +14,84 @@ export default class App extends Component {
     super(props);
     this.moviesApi = new MoviesApiService();
     this.state = {
-      query: 'Batman',
+      query: '',
       movies: [],
+      ratedMovies: [],
+      ratedMoviesNumber: 0,
       genresList: [],
       currentPage: 1,
-      totalPages: 5,
+      totalPages: 1,
       totalRatedPages: 1,
-      loading: true,
+      loading: false,
       error: false,
       errorText: null,
       guestSessionId: null,
       activeTab: 'Search',
+      hasRated: false,
+      isFirstInit: true
     };
 
+    this.saveGuestId = () => {
+      const guestId = localStorage.getItem('guestId');
+
+      if (guestId) {
+        this.setState({ guestSessionId: guestId });
+      } else {
+        this.moviesApi.getGuestSessionId()
+          .then((newGuestId) => {
+            this.setState({ guestSessionId: newGuestId });
+            localStorage.setItem('guestId', newGuestId);
+          })
+          .catch(this.onError);
+      }
+    }
+
     this.onQueryChange = (evt) => {
-      this.setState({ query: evt.target.value });
+      const newQuery = evt.target.value.trim();
+
+      if (newQuery === '') {
+        this.setState({query: ''})
+        return;
+      }
+
+      this.setState({ isLoading: true });
+
+      this.moviesApi
+        .getAllMovies(newQuery)
+        .then((resp) => {
+          this.setState({ 
+            query: newQuery,
+            movies: resp.results,
+            totalPages: resp.total_pages,
+            loading: false,
+            isFirstInit: false
+          });
+        })
+        .catch((e) => {
+          this.setState({ loading: false });
+          this.onError(e);
+        });
     };
   
     this.onQueryChangeDebounced = debounce(this.onQueryChange, 800);
 
     this.onPageChange = (page) => {
-      console.log('here')
-      this.setState({currentPage: page});
+      this.setState({
+        loading: true
+      });
+      this.moviesApi
+        .getSearchedMoviesByPage(this.state.query, page)
+        .then((resp) => {
+          this.setState({
+            movies: resp.results,
+            currentPage: resp.page,
+            loading: false
+          })
+        })
+        .catch((e) => {
+          this.setState({loading: false});
+          this.onError(e);
+        })
     };
 
     this.onError = (e) => {
@@ -55,70 +111,32 @@ export default class App extends Component {
     };
 
     this.onRatingChange = async (value, guestSessionId, movieId) => {
-      await this.moviesApi.postRating(value, guestSessionId, movieId);
-      localStorage.setItem(movieId, value);
+      if (this.state.activeTab === 'Search') {
+        await this.moviesApi.postRating(value, guestSessionId, movieId);
+        this.setState({
+          hasRated: true
+        });
+      }
+    }
+
+    this.getRated = () => {
+      return this.moviesApi.getRatedSession(this.state.guestSessionId, 1);
+    }
+
+    this.getRatedPage = (page) => {
+      return this.moviesApi.getRatedSession(this.state.guestSessionId, page);
     }
   }
 
   componentDidMount() {
-    localStorage.clear()
-    this.moviesApi.createGuestSession().then((response) => {
-      this.setState({ guestSessionId: response });
-    });
     this.saveGenres();
-    this.updateMovies();
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    const { query, currentPage, activeTab, guestSessionId } = this.state;
-    if (guestSessionId !== prevState.guestSessionId) {
-      localStorage.clear();
-    }
-    if (query !== prevState.query && activeTab === 'Search') {
-      this.onPageChange(1);
-      this.updateMovies();
-    } else if (activeTab !== prevState.activeTab) {
-      this.onPageChange(1);
-      if (activeTab === 'Search') {
-        this.updateMovies();
-      } else {
-        this.updateRatedMovies();
-      }
-    } else if (currentPage !== prevState.currentPage) {
-      if (activeTab === 'Search') {
-        this.updateMovies();
-      } else {
-        this.updateRatedMovies();
-      }
-    }
-  }
-
-
-  updateMovies() {
-    this.startLoading();
-    const { query, currentPage } = this.state;
-    this.moviesApi.getSearchedMovies(query, currentPage)
-      .then(([result, pages]) => {
-        this.setState({ movies: result, totalPages: pages > 500 ? 500 : pages })
-      })
-      .then(this.onLoaded)
-      .catch(this.onError);
-  }
-
-  updateRatedMovies() {
-    this.startLoading();
-    const { guestSessionId, currentPage } = this.state;
-    this.moviesApi.getRatedMovies(guestSessionId, currentPage)
-      .then(([result, pages]) => {
-        this.setState({ movies: result, totalPages: pages > 500 ? 500 : pages })
-      })
-      .then(this.onLoaded)
-      .catch(this.onError);
+    this.saveGuestId();
   }
 
   saveGenres() {
     this.moviesApi.getGenres()
-      .then((result) => this.setState({ genresList: result }));
+      .then((result) => this.setState({ genresList: result }))
+      .catch(this.onError);
   }
 
   render() {
@@ -133,46 +151,58 @@ export default class App extends Component {
       totalRatedPages,
       guestSessionId,
       genresList,
+      activeTab,
+      hasRated,
+      isFirstInit
     } = this.state;
 
     const searchTab = {
       key: 'Search',
-      label: 'Search',
-      children: (
-        <>
-          <AppHeader onQueryChange={this.onQueryChangeDebounced} />
-          <MovieList
-            movies={movies}
-            loading={loading}
-            error={error}
-            query={query}
-            errorText={errorText}
-            guestSessionId={guestSessionId}
-            onRatingChange={this.onRatingChange}
-          />
-          <AppFooter currentPage={currentPage} onPageChange={this.onPageChange} totalPages={totalPages} />
-        </>
-      ),
+      label: 'Search'
     }
 
     const ratedTab = {
       key: 'Rated',
-      label: 'Rated',
-      children: (
-        <>
-          <MovieList
-            movies={movies}
-            loading={loading}
-            error={error}
-            query={query}
-            errorText={errorText}
-            guestSessionId={guestSessionId}
-            onRatingChange={this.onRatingChange}
-          />
-          <AppFooter currentPage={currentPage} onPageChange={this.onPageChange} totalPages={totalRatedPages} />
-        </>
-      ),
-    } 
+      label: 'Rated'
+    }
+
+    const currentTab = (tab) => {
+      if (tab === 'Search') {
+        return (
+          <>
+            <AppHeader onQueryChange={this.onQueryChangeDebounced} />
+            <MovieList
+              movies={movies}
+              loading={loading}
+              error={error}
+              query={query}
+              errorText={errorText}
+              guestSessionId={guestSessionId}
+              onRatingChange={this.onRatingChange}
+              isFirstInit={isFirstInit}
+              currentPage={currentPage}
+              onPageChange={this.onPageChange}
+              totalPages={totalPages}
+            />
+          </>
+        );
+      } else if (tab === 'Rated') {
+        return (
+          <>
+            <RatedMovieList
+              loading={loading}
+              error={error}
+              errorText={errorText}
+              getRated={this.getRated}
+              getRatedPage={this.getRatedPage}
+              onRatingChange={this.onRatingChange}
+              guestSessionId={guestSessionId}
+              hasRated={hasRated}
+            />
+          </>
+        )
+      }
+    }
 
     return (
       <GenresContext.Provider value={genresList}>
@@ -185,6 +215,7 @@ export default class App extends Component {
             centered
             destroyInactiveTabPane
           />
+          {currentTab(activeTab)}
         </div>
       </GenresContext.Provider>
     );
