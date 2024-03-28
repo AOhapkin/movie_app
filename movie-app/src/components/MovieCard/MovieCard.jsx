@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import { parseISO, format } from 'date-fns';
 import { Rate } from 'antd';
+import classnames from 'classnames';
 
 import GenresContext from '../GenresContext/GenresContext';
 
@@ -56,18 +57,13 @@ export default class MovieCard extends Component {
     const posterPath = 'https://image.tmdb.org/t/p/w500';
     const formattedDate = date === '' || undefined ? '' : format(parseISO(date), 'MMMM d, y');
     
-    let ratingClassnames = 'card__rating';
-    if (globalRating < 3) {
-      ratingClassnames += ' card__rating--red'
-    } else if (globalRating < 5) {
-      ratingClassnames += ' card__rating--orange'
-    } else if (globalRating < 7) {
-      ratingClassnames += ' card__rating--yellow'
-    } else if (globalRating >= 7) {
-      ratingClassnames += ' card__rating--green'
-    } else {
-      ratingClassnames += ' card__rating--no-rating'
-    }
+    let ratingClassnames = classnames('card__rating', {
+      'card__rating--red': globalRating < 3,
+      'card__rating--orange': globalRating >= 3 && globalRating < 5,
+      'card__rating--yellow': globalRating >= 5 && globalRating < 7,
+      'card__rating--green': globalRating >= 7,
+      'card__rating--no-rating': isNaN(globalRating) || globalRating === null
+    });
 
     const genresList = this.getRelatedGenres(allGenres, genres);
 
