@@ -4,6 +4,7 @@ import { Online, Offline } from 'react-detect-offline';
 import MovieCard from '../MovieCard/MovieCard';
 import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 import ErrorMessage from '../ErrorMessage/ErrorMessage';
+import AppFooter from '../AppFooter/AppFooter';
 
 import '../MovieList/MovieList.css';
 
@@ -52,12 +53,13 @@ export default class RatedMovieList extends Component {
   }
 
   componentDidMount() {
-    console.log('Rated did mount')
     this.getRated();
   }
 
   render() {
-    const { ratedMovies, onRatingChange, guestSessionId, loading, error, errorText } = this.state;
+    const { ratedMovies, guestSessionId, loading, error, errorText, totalPages, page } = this.state;
+    const { onRatingChange } = this.props;
+
     const moviesElements = ratedMovies.map((movie) => {
       return (
         <MovieCard
@@ -78,6 +80,13 @@ export default class RatedMovieList extends Component {
 
     const content = !loading && !error ? moviesElements : null;
 
+    const pagination = (pages) => {
+      if (pages > 1) {
+        return <AppFooter currentPage={page} onPageChange={this.getRatedPage} totalPages={totalPages} />
+      }
+      return null;
+    }
+
     return (
       <div className="movies-list">
         <Online>
@@ -85,6 +94,7 @@ export default class RatedMovieList extends Component {
           {error ? <ErrorMessage messageText={errorText} /> : null}
           {content}
           {moviesElements.length === 0 && !loading ? <p>Пока нет фильмов с оценками</p> : null}
+          {pagination(totalPages)}
         </Online>
         <Offline>
           <ErrorMessage messageText="Нет связи с сервером" />

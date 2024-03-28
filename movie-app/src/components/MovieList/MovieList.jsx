@@ -39,7 +39,6 @@ export default function MovieList({
   const content = !loading && !error ? moviesElements : null;
 
   const pagination = (pages) => {
-    console.log('total pages: ', totalPages)
     if (pages > 1) {
       return <AppFooter currentPage={currentPage} onPageChange={onPageChange} totalPages={totalPages} />
     }

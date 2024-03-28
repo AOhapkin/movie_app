@@ -6,7 +6,6 @@ import MoviesApiService from '../../services/movies-api';
 import MovieList from '../MovieList/MovieList';
 import RatedMovieList from '../RatedMovieList/RatedMovieList';
 import AppHeader from '../AppHeader/AppHeader';
-import AppFooter from '../AppFooter/AppFooter';
 import GenresContext from '../GenresContext/GenresContext';
 import './App.css'
 
@@ -18,6 +17,7 @@ export default class App extends Component {
       query: '',
       movies: [],
       ratedMovies: [],
+      ratedMoviesNumber: 0,
       genresList: [],
       currentPage: 1,
       totalPages: 1,
@@ -108,7 +108,6 @@ export default class App extends Component {
 
     this.onTabChange = (key) => {
       this.setState({ activeTab: key });
-      console.log('Current tab: ', this.state.activeTab)
     };
 
     this.onRatingChange = async (value, guestSessionId, movieId) => {
@@ -119,7 +118,6 @@ export default class App extends Component {
     }
 
     this.getRated = () => {
-      console.log(this.state.guestSessionId)
       return this.moviesApi.getRatedSession(this.state.guestSessionId, 1);
     }
 
@@ -184,7 +182,6 @@ export default class App extends Component {
               onPageChange={this.onPageChange}
               totalPages={totalPages}
             />
-            {/* <AppFooter currentPage={currentPage} onPageChange={this.onPageChange} totalPages={totalPages} /> */}
           </>
         );
       } else if (tab === 'Rated') {
@@ -200,7 +197,6 @@ export default class App extends Component {
               guestSessionId={guestSessionId}
               hasRated={hasRated}
             />
-            <AppFooter currentPage={currentPage} onPageChange={this.onPageChange} totalPages={totalRatedPages} />
           </>
         )
       }

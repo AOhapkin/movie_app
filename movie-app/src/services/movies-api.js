@@ -115,7 +115,6 @@ export default class MoviesApiService {
       if (!result.ok) {
         throw new Error(`Failed to post rating. Movie ID : ${movieId}`);
       }
-      console.log(result)
       return result;
     } catch (e) {
       throw new Error(`Failed to post rating. Movie ID : ${movieId}`, e.message);
