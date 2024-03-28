@@ -111,10 +111,12 @@ export default class App extends Component {
     };
 
     this.onRatingChange = async (value, guestSessionId, movieId) => {
-      await this.moviesApi.postRating(value, guestSessionId, movieId);
-      this.setState({
-        hasRated: true
-      })
+      if (this.state.activeTab === 'Search') {
+        await this.moviesApi.postRating(value, guestSessionId, movieId);
+        this.setState({
+          hasRated: true
+        });
+      }
     }
 
     this.getRated = () => {
